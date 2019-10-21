@@ -99,38 +99,16 @@ app.get('/products',(req,res)=>{
 });
 
 //大留言
-app.patch('/products:id',(req,res)=>{
-    console.log(req.body);
-    mysqlConnection.query(sql,[body,req.params.id],(err,rows,fields)=>{
-        console.log(body);
-        
-
-            if(rows.changedRows==0){
-            data.success=true;
-            data.message.type='warning';
-            data.message.text='資料沒有修改';
-            res.send(data);
-            return;
-        };
-            if(rows.changedRows!==0){
-           
-            data.success=true;
-            data.message.type='success';
-            data.message.text='資料修改成功';
-            req.session.m_name=data.body.m_name;
-            req.session.m_photo=data.body.m_photo;
-            res.send(data);
-            return;
-            };
+app.patch('/products/bigmsg:id',(req,res)=>{
+    console.log(req.body);   
+    body=req.body;
+    var sql="UPDATE `products` SET message=? WHERE `p_sid`=?";
+    mysqlConnection.query(sql,[JSON.stringify(body),req.params.id],(err,rows,fields)=>{
          
-            if(err){
-            data.message.text='E-mail重複使用,資料修改失敗';
-            data.message.type='danger';
-            res.send(data);
-            console.log(err);
-        }
-        
-        
+        if(!err)       
+        res.send(rows)
+        else
+        console.log(err);
     })
 })
 
