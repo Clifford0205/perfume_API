@@ -117,6 +117,66 @@ app.post('/memberdata',(req,res)=>{
 });
 
 
+//會員登入
+app.post('/login',(req,res)=>{
+    console.log(req.body);
+    body=req.body; 
+    let data={
+        passed:false,
+        message:'帳號或密碼錯誤',
+        body:''
+    }
+    var sql="SELECT * FROM `member` WHERE `m_mail`=? AND `m_password`=?";
+    mysqlConnection.query(sql,[body.login_email,body.login_password],(err,rows,fields)=>{
+        if(rows.length!==0){   
+            for(let s in rows){
+                rows[s].m_birthday=moment(rows[s].m_birthday).format('YYYY-MM-DD');
+                rows[s].buy_record=JSON.parse(rows[s].buy_record);
+                rows[s].shopping_cart=JSON.parse(rows[s].shopping_cart);
+            }        
+            data.passed=true;
+            data.message='正確';
+            data.body=rows;
+            res.send(data);
+        }else{
+            res.send(data);
+        }
+    })
+});
+
+//會員資料修改
+app.put('/memberdata/edit/:id',(req,res)=>{
+    // console.log(req.body);
+    // console.log(req.params.id);
+    thebody=req.body; 
+
+    let data={
+        passed:false,
+        message:'資料沒有修改',
+        body:''
+    }
+    var sql="UPDATE `member` SET ? WHERE `m_sid`=?";    
+    mysqlConnection.query(sql,[thebody,req.params.id],(err,rows,fields)=>{
+        // if(!err)
+        // res.send(rows);
+        // else
+        // console.log(err)
+        if(rows.changedRows===1){
+            thebody.shopping_cart=JSON.parse(thebody.shopping_cart);
+            thebody.buy_record=JSON.parse(thebody.buy_record);
+            data.passed=true;
+            data.message='正確';
+            data.body=thebody;
+            res.send(data)
+        }             
+        else{
+            res.send(data);
+        }
+      
+    })
+});
+
+
 
 // 拿到所有產品資料
 app.get('/products',(req,res)=>{
@@ -135,7 +195,7 @@ app.get('/products',(req,res)=>{
 });
 
 //大留言
-app.patch('/products/bigmsg:id',(req,res)=>{
+app.patch('/products/bigmsg/:id',(req,res)=>{
     console.log(req.body);   
     body=req.body;
     var sql="UPDATE `products` SET message=? WHERE `p_sid`=?";
@@ -148,7 +208,7 @@ app.patch('/products/bigmsg:id',(req,res)=>{
 })
 
 //小留言
-app.patch('/products/littlemsg:id',(req,res)=>{
+app.patch('/products/littlemsg/:id',(req,res)=>{
     console.log(req.body);   
     body=req.body;
     var sql="UPDATE `products` SET message=? WHERE `p_sid`=?";
