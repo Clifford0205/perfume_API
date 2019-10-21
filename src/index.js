@@ -82,6 +82,42 @@ app.get('/member',(req,res)=>{
     })
 });
 
+//專案
+
+// INSERT INTO `member` (`m_mail`, `m_password`, `m_name`, `m_mobile`, `m_birthday`, `buy_record`, `shopping_cart`, `m_sid`) VALUES ('ttttt@gmail.com', '12345', 'ttttt', '0953830559', '2019-10-15', '[]', '[]', NULL);
+
+//拿到會員資料
+
+app.get('/memberdata',(req,res)=>{
+    mysqlConnection.query('SELECT*FROM member ',(err,rows,fields)=>{
+        for(let s in rows){
+            rows[s].m_birthday=moment(rows[s].m_birthday).format('YYYY-MM-DD');
+            rows[s].buy_record=JSON.parse(rows[s].buy_record);
+            rows[s].shopping_cart=JSON.parse(rows[s].shopping_cart);
+        }
+        if(!err)       
+        res.send(rows)
+        else
+        console.log(err);
+    })
+});
+
+
+//會員註冊
+app.post('/memberdata',(req,res)=>{
+    console.log(req.body);
+    body=req.body; 
+    var sql="INSERT INTO `member` SET ?";
+    mysqlConnection.query(sql,body,(err,rows,fields)=>{
+        if(!err)       
+        res.send(rows)
+        else
+        console.log(err);
+    })
+});
+
+
+
 // 拿到所有產品資料
 app.get('/products',(req,res)=>{
     mysqlConnection.query('SELECT*FROM products ',(err,rows,fields)=>{
@@ -103,8 +139,7 @@ app.patch('/products/bigmsg:id',(req,res)=>{
     console.log(req.body);   
     body=req.body;
     var sql="UPDATE `products` SET message=? WHERE `p_sid`=?";
-    mysqlConnection.query(sql,[JSON.stringify(body),req.params.id],(err,rows,fields)=>{
-         
+    mysqlConnection.query(sql,[JSON.stringify(body),req.params.id],(err,rows,fields)=>{     
         if(!err)       
         res.send(rows)
         else
@@ -112,6 +147,22 @@ app.patch('/products/bigmsg:id',(req,res)=>{
     })
 })
 
+//小留言
+app.patch('/products/littlemsg:id',(req,res)=>{
+    console.log(req.body);   
+    body=req.body;
+    var sql="UPDATE `products` SET message=? WHERE `p_sid`=?";
+    mysqlConnection.query(sql,[JSON.stringify(body),req.params.id],(err,rows,fields)=>{ 
+        if(!err)       
+        res.send(rows)
+        else
+        console.log(err);
+    })
+})
+
+
+
+//專案
 
 
 //拿到一個會員的資料
