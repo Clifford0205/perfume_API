@@ -177,6 +177,71 @@ app.put('/memberdata/edit/:id',(req,res)=>{
 });
 
 
+//會員密碼修改
+app.put('/memberdata/password/:id',(req,res)=>{
+    // console.log(req.body);
+    // console.log(req.params.id);
+    thebody=req.body; 
+
+    let data={
+        passed:false,
+        message:'資料沒有修改',
+        body:''
+    }
+    var sql="UPDATE `member` SET ? WHERE `m_sid`=?";    
+    mysqlConnection.query(sql,[thebody,req.params.id],(err,rows,fields)=>{
+        
+     
+        if(rows.changedRows===1){
+            thebody.shopping_cart=JSON.parse(thebody.shopping_cart);
+            thebody.buy_record=JSON.parse(thebody.buy_record);
+            data.passed=true;
+            data.message='正確';
+            data.body=thebody;
+            res.send(data)
+        }             
+        else{
+            res.send(data);
+        }
+      
+    })
+});
+
+//加到購物車
+app.put('/memberdata/addcart/:id',(req,res)=>{
+    // console.log(req.body);
+    // console.log(req.params.id);
+    thebody=req.body; 
+
+    let data={
+        passed:false,
+        message:'資料沒有修改',
+        body:''
+    }
+    var sql="UPDATE `member` SET ? WHERE `m_sid`=?";    
+    mysqlConnection.query(sql,[thebody,req.params.id],(err,rows,fields)=>{
+         if(!err)
+        res.send(rows);
+        else
+        console.log(err)
+        
+     
+        // if(rows.changedRows===1){
+        //     thebody.shopping_cart=JSON.parse(thebody.shopping_cart);
+        //     thebody.buy_record=JSON.parse(thebody.buy_record);
+        //     data.passed=true;
+        //     data.message='正確';
+        //     data.body=thebody;
+        //     res.send(data)
+        // }             
+        // else{
+        //     res.send(data);
+        // }
+      
+    })
+});
+
+
 
 // 拿到所有產品資料
 app.get('/products',(req,res)=>{
