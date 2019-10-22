@@ -67,20 +67,7 @@ mysqlConnection.connect((err)=>{
 })
 
 
-// 拿到所有會員資料
-app.get('/member',(req,res)=>{
-    mysqlConnection.query('SELECT*FROM member',(err,rows,fields)=>{
 
-        for(let s in rows){
-            rows[s].m_birthday2=moment(rows[s].m_birthday).format('YYYY-MM-DD');
-        }
-
-        if(!err)       
-        res.send(rows)
-        else
-        console.log(err);
-    })
-});
 
 //專案
 
@@ -141,6 +128,27 @@ app.post('/login',(req,res)=>{
         }else{
             res.send(data);
         }
+    })
+});
+
+//重新抓取會員資料
+app.post('/memberagain',(req,res)=>{
+    console.log(req.body);
+    body=req.body; 
+    let data={
+        body:''
+    }
+    var sql="SELECT * FROM `member` WHERE `m_sid`=?";
+    mysqlConnection.query(sql,body.m_sid,(err,rows,fields)=>{
+
+        if(!err) {                 
+            rows[0].m_birthday=moment(rows[0].m_birthday).format('YYYY-MM-DD');
+            rows[0].buy_record=JSON.parse(rows[0].buy_record);
+            rows[0].shopping_cart=JSON.parse(rows[0].shopping_cart);          
+            res.send(rows);
+        }   
+        else
+        console.log(err);
     })
 });
 
@@ -209,7 +217,7 @@ app.put('/memberdata/password/:id',(req,res)=>{
 
 //加到購物車
 app.put('/memberdata/addcart/:id',(req,res)=>{
-    // console.log(req.body);
+    console.log(req.body);
     // console.log(req.params.id);
     thebody=req.body; 
 
