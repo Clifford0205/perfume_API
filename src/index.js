@@ -250,6 +250,26 @@ app.patch('/memberdata/removecart/:id',(req,res)=>{
     })
 });
 
+//購物車到訂單
+app.patch('/memberdata/inorder/:id',(req,res)=>{
+    console.log(req.body);
+    // console.log(req.params.id);
+    thebody=req.body; 
+
+    let data={
+        passed:false,
+        message:'資料沒有修改',
+        body:''
+    }
+    var sql="UPDATE `member` SET ? WHERE `m_sid`=?";    
+    mysqlConnection.query(sql,[thebody,req.params.id],(err,rows,fields)=>{
+         if(!err)
+        res.send(rows);
+        else
+        console.log(err);    
+    })
+});
+
 
 
 
@@ -281,6 +301,20 @@ app.patch('/products/bigmsg/:id',(req,res)=>{
         console.log(err);
     })
 })
+
+//送出顧客意見
+app.post('/clientmessage',(req,res)=>{
+    console.log(req.body);
+    body=req.body; 
+    var sql="INSERT INTO `message` SET ?";
+    mysqlConnection.query(sql,body,(err,rows,fields)=>{
+        if(!err)       
+        res.send(rows)
+        else
+        console.log(err);
+    })
+});
+
 
 //小留言
 app.patch('/products/littlemsg/:id',(req,res)=>{
